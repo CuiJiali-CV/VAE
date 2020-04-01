@@ -44,10 +44,12 @@
 ### Tips: change z size bigger, for example 20, for better recon. 
 
 <br />
+
 ### Generation
- ![Image text](https://github.com/CuiJiali-CV/VAE/raw/master/img/Generation.png)
+![Image text](https://github.com/CuiJiali-CV/VAE/raw/master/img/Generation.png)
+
 ### Reconstruction
- ![Image text](https://github.com/CuiJiali-CV/VAE/raw/master/img/Reconstruction.png)
+![Image text](https://github.com/CuiJiali-CV/VAE/raw/master/img/Reconstruction.png)
 
 <br /><br />
 ## Author
