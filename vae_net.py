@@ -84,20 +84,17 @@ class vaeNet(object):
         # std = tf.exp(0.5*logvar)
         # eps = tf.random_uniform(shape=tf.shape(std))
         # return mu+eps*std
-        return mu + logvar * tf.random_normal(tf.shape(mu), 0, 1, dtype=tf.float32)
+        return mu + logvar * tf.random_normal([tf.shape(mu)[0], self.z_size])
 
     def loss_func(self, recon, x, mu, logvar):
-        recon = tf.clip_by_value(recon, 1e-8, 1 - 1e-8)
+
         x = tf.reshape(x, [self.batch_size, -1])
-        marginal_likelihood = tf.reduce_sum(x * tf.log(recon) + (1 - x) * tf.log(1 - recon), 1)
-        KL_divergence = 0.5 * tf.reduce_sum(tf.square(mu) + tf.square(logvar) - tf.log(1e-8 + tf.square(logvar)) - 1, 1)
+        loss = tf.reduce_sum(0.5 * (tf.square(mu) + tf.square(logvar) -
+                             2.0 * tf.log(logvar + 1e-8) - 1.0)) +\
+                tf.reduce_sum(-x * tf.log(recon + 1e-8) -
+                            (1.0 - x) * tf.log(1.0 - recon + 1e-8))
 
-        marginal_likelihood = tf.reduce_mean(marginal_likelihood)
-        KL_divergence = tf.reduce_mean(KL_divergence)
 
-        ELBO = marginal_likelihood - KL_divergence
-
-        loss = -ELBO
 
 
         return loss
@@ -123,8 +120,6 @@ class vaeNet(object):
             print('Loading checkpoint {}.'.format(latest_checkpoint))
 
         tf.get_default_graph().finalize()
-
-        latent_gen = np.random.normal(size=(len(data), self.z_size))
 
         for epoch in range(start + 1, self.epoch):
             num_batch = int(len(data) / self.batch_size)
